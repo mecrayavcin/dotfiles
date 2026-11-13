@@ -159,7 +159,7 @@ useradd -m -G wheel,users mecra
 passwd mecra
 (Sonra sifreni yaz)
 
-visudo 
+visudo
 (Acilan sayfada /%wheel arat ve # %wheel ALL=(ALL:ALL) ALL bastaki # kaldir)
 (2 tane wheel satiri var 1. olan, i ile editle cik)
 
@@ -343,7 +343,7 @@ sudo nbfc restart
 nbfc set --auto
 sudo systemctl enable --now nbfc_service
 
-/.local/bin icindeki nitro-toogle sh dosyasini calistirilabilir yap 
+/.local/bin icindeki nitro-toogle sh dosyasini calistirilabilir yap
 chmod +x ~/.local/bin/nitro-toggle
 
 # Font
@@ -355,6 +355,4 @@ sudo mv Bibata-* /usr/share/icons/
 cd ~/dotfiles
 git status
 git add -A && git commit -m "ne duzenlendi?" && git push
-
-
 
