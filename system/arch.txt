@@ -1,0 +1,360 @@
+Secure Boot Kapat!
+
+# Font buyutme
+setfont ter-132b
+
+# Wifi baglanma
+iwctl
+device list
+station wlan0 scan
+station wlan0 get-networks
+station wlan0 connect TP-Link_F858_5G
+
+# SSH baglanmak icin IP bilgisi
+ip addr show
+(Wlan0 olan satir yerel IP)
+
+# Root icin password olusturma
+passwd
+
+# SSH aktif mi bakmak icin
+systemctl status sshd
+systemctl enable --now sshd
+(2. komut Servisin baslangicta oto baslamasi aktif edildi)
+
+# SSH ile 2. Pcde ana Pc baglanip Arch kurma
+ssh root@IPAdresi
+
+# Sistem saati SYNC mi kontrol etme
+timedatectl
+(Sync satiri yes olmali)
+
+# Sistem kac bit?
+cat /sys/firmware/efi/fw_platform_size
+
+# Disk parcalari gosterme
+fdisk -l
+(Ilk satir disk ismi gosterir, altta parcalanmis ise p1 eklenen tum parcalar gozukur)
+(Bize ilk satir ana disk isim lazim)
+
+# Disk parca yapilandirma
+cfdisk /dev/nvme0n1
+(Ana diski adi ust kisimdaki ilk satir)
+
+D ile tum satirlari sil
+N ile ilk 1G alan verip, enter bas Uefi Alani olustur, ardindan T basip cinsi Efi sec.
+N ile ilk 4G alan verip, enter bas Swap Alani olustur, ardindan T basip cinsi Linux Swap sec.
+N ile ilk kalan alan verip, bu bizim ana alanimiz
+Shift + W kaydet cik bu sistem yazilacaktir.
+Yes enter yaz.
+Quit basip cik.
+
+/dev/nvme0n1p1 efi
+/dev/nvme0n1p2 swap
+/dev/nvme0n1p3 Linux filesystem olacak
+
+fdisk -l ile olusan diskleri gorebilirsin.
+
+# Root sifreleme
+cryptsetup luksFormat /dev/nvme0n1p3
+(Sifreni belirle, onay YES buyuk harflerle olmali)
+
+# Root Sifreli bolum acma
+cryptsetup open --type luks /dev/nvme0n1p3 lvm
+(Sife gir ac)
+
+# Olusan lvm gorme
+ls -l /dev/mapper
+(Lvm gozukmeli)
+
+# lvm duzenleme disk boyutu belirleme
+pvcreate /dev/mapper/lvm
+(Bu cihazı LVM için “fiziksel hacim” (Physical Volume) olarak işaretler)
+
+vgcreate volgroup0 /dev/mapper/lvm
+(Havuz olusturuldu)
+
+lvcreate -L 80GB volgroup0 -n lv_root
+(80 GB / kok dizin olusturuldu)
+
+lvcreate -l 100%FREE volgroup0 -n lv_home
+(kalan GB /home dizin olusturuldu)
+
+modprobe dm_mod
+(Device Mapper çekirdek modülünü yükler)
+
+vgscan
+(Sistemdeki volume group’ları arar, birsey yapmana gerek yok)
+
+vgchange -ay
+(Gruplari aktif eder, birsey yapmana gerek yok)
+
+# Formatlama ve MOUNT
+
+(fdisk -l ile parca ve isimleri gorebilirsin)
+
+mkfs.ext4 /dev/volgroup0/lv_root
+mkfs.ext4 /dev/volgroup0/lv_home
+mkfs.fat -F 32 /dev/nvme0n1p1
+mkswap /dev/nvme0n1p2
+
+mount /dev/volgroup0/lv_root /mnt
+
+mkdir /mnt/home
+mount /dev/volgroup0/lv_home /mnt/home
+
+mkdir /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
+(boot dedigimiz uefi prca oluyor yani 1)
+
+swapon /dev/nvme0n1p2
+
+(lsblk ile duzenlemeyi gorebilirsin)
+
+=======================================================
+
+
+pacstrap -K /mnt base linux linux-firmware lvm2 networkmanager neovim base-devel intel-ucode
+genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+
+# mkinitcpio hook’ları
+nvim /etc/mkinitcpio.conf
+HOOKS=() satirini bul, block ve filesystems arasina sd-encrypt lvm2 ekle!
+Hook icinde systemd sd-vconsole bulunmali.
+
+# Timezone
+ln -sf /usr/share/zoneinfo/
+(Tab basarak ulkeleri gorebilirsin. Ulkeden sonra tab ile iller cikar)
+ln -sf /usr/share/zoneinfo/America/Toronto /etc/localtime
+
+# Zaman ayarlama
+hwclock --systohc
+
+# Dil ve bolge secimi
+nvim /etc/locale-gen
+(/en_US ara en_US.UTF-8 ve en_US ISO-8859-1 hastegleri X kaldir kaydet)
+(i moda gecmene gerek yok x diliyor j asagi k Yukari gider :wq kaydet)
+
+# Bolge kaydet
+locale-gen
+
+# Sistem lokal secme
+/etc/locale.conf
+(i yazma moduna gec icine LANG=en_US.UTF-8 ekle kaydet cik)
+
+# Hostname girme
+nvim /etc/hostname
+(mecra-arch ekle cik)
+
+# Yukledigimiz network manageri baslangicta calisir hale getirmek
+systemctl enable NetworkManager
+(M ve N buyuk harfle olmali)
+
+# Root icin password olusturma
+passwd
+
+# User olusturma ve user icin password
+useradd -m -G wheel,users mecra
+passwd mecra
+(Sonra sifreni yaz)
+
+visudo 
+(Acilan sayfada /%wheel arat ve # %wheel ALL=(ALL:ALL) ALL bastaki # kaldir)
+(2 tane wheel satiri var 1. olan, i ile editle cik)
+
+# Nvidia driver
+pacman -S nvidia-open nvidia-utils intel-media-driver nvidia-prime
+
+# initramfs’i yeniden oluştur
+mkinitcpio -P
+
+# Bootloder
+pacman -S grub efibootmgr
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+
+# p3 UUID ogrenme
+echo "rd.luks.name=$(blkid -s UUID -o value /dev/nvme0n1p3)=lvm"
+
+# Grub dosya ac
+nvim /etc/default/grub
+(GRUB_CMDLINE_LINUX="" satırını ustteki kodu koy AMA sonuna root=/dev/volgroup0/lv_root ekle)
+(GRUB_CMDLINE_LINUX="rd.luks.name=UID=lvm root=/dev/volgroup0/lv_root") gibi olacak
+Brightness calismasi icin ise:
+(GRUB_CMDLINE_LINUX_DEFAULT="var olanlar + acpi-backlight=native" ekle
+
+
+# Config uret
+grub-mkconfig -o /boot/grub/grub.cfg
+
+# Kontrol
+grep rd.luks /boot/grub/grub.cfg
+
+
+#Son
+
+exit
+umount -R /mnt
+reboot
+
+(USB’yi çıkarmayı unutma. Açılışta GRUB gelir, ardından şifre sorulur, şifreyi girince sistem açılır.)
+
+==================================================================
+
+# Aga baglan
+sudo nmcli device wifi connect "TP-Link_F858_5G" password "SIFREN"
+nmcli connection modify "TP-Link_F858_5G" connection.autoconnect yes
+
+# Saat Senkronize
+sudo timedatectl set-ntp true
+(internet olmali)
+
+
+# Bluetooth paketlerini kurma
+sudo pacman -S bluez bluez-utils bluez-deprecated-tools bluetui
+
+# Bluetooth servisini aktif etme ve başlatma
+sudo systemctl enable --now bluetooth
+
+# Guncelleme
+sudo pacman -Syu
+
+# Yay kurulum
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+
+# Hyperland kurulum
+pacman -S hyprland kitty
+
+# Font emoji
+sudo pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji
+
+# Display Manager
+sudo pacman -S ly
+sudo systemctl enable ly@tty2
+Sudo reboot
+
+============================================================
+
+
+Win + Q Terminal ac
+sudo pacman -S firefox thunderbird
+firefox >/dev/null 2>&1 & disown
+https://github.com/hyprwm/Hyprland/blob/main/example/hyprland.lua
+(Default Lua kopyala)
+nvim ~/.config/hypr/hyprland.lua
+(i modu ile yapistir kaydet)
+
+WIn + M basip Hyperland cik yine geri gir
+
+hyprctl monitors all
+nvim hyprland.lua
+output: monitor ismi
+mode: 1920x1080@144
+position: 0x0
+scale: 1
+
+Kaydet cik
+
+# Notifokasyon icin
+sudo pacman -S mako
+sudo pacman -S sof-firmware pipewire wireplumber pipewire-audio pipewire-pulse pipewire-alsa pipewire-jack
+sudo pacman -S pavucontrol
+sudo pacman -S btop htop
+
+Sudo reboot
+
+==================================================================================
+
+# Masaustu portal yoneticisi
+Win + Q Terminal ac
+sudo pacman -S xdg-desktop-portal-hyprland
+sudo pacman -S qt5-wayland qt6-wayland
+sudo pacman -S ttf-jetbrains-mono-nerd
+sudo pacman -S nemo imv mpv
+sudo pacman -S wl-clipboard cliphist wpaperd hyprshutdown rofi-calc rofi-emoji
+yay -S spotify
+
+# Yuklenilen uygulamalari Hyperland Lua Kisa yol ekleme
+sudo pacman -S neovim
+sudo pacman -S rofi
+cd ~/.config/hypr
+Dotfiles ~/.config/hypr/hyprland.lua
+Dotfiles ~/.config/hypr/.luarc.json
+
+cd ~/.config/nvim
+mkdir -p ~/Documents/Notes
+Dotfiles Tum dosyalari at
+:restart (neovim yeniden baslat)
+:MasonInstall pyright ruff efm
+
+mkdir -p ~/.config/rofi
+rofi -dump-config > ~/.config/rofi/config.rasi
+Dotfiles ~/.config/rofi/config.rasi
+
+# Diger
+sudo pacman -S playerctl brightnessctl
+sudo pacman -S nwg-look gnome-themes-extra
+Win+Space
+Nwg calistir
+Adwaita Dark sec
+Color schema: Prefer Dark
+Uygula cik
+
+sudo pacman -S qt6ct
+Terminal qt6ct yaz.
+color schema: darker
+
+#Waybar
+sudo pacman -S waybar
+sudo pacman -S inotify-tools
+mkdir ~/.config/waybar
+cd ~/.config/waybar
+Dotfiles ~/.config/waybar/config.jsonc
+Dotfiles ~/.config/waybar/style.css
+
+Win+Space
+killall waybar
+waybar
+
+# Zsh kurulum
+sudo pacman -S zsh neovim eza bat fd fzf zoxide starship ripgrep
+git clone https://github.com/radleylewis/zsh ~/.config/zsh
+DOTFILES > Ustteki linkten degil Dotfiles kullan
+nvim /etc/zsh/zshenv
+https://github.com/radleylewis/zsh/tree/main
+Ust kodu ekle kaydet!
+chsh -s $(which zsh)
+ustteki kod olmazsa chsh -s /usr/bin/zsh
+mkdir -p ~/.local/state/zsh
+mkdir -p ~/.cache/zsh
+
+# Benim Istediklerim
+sudo pacman -S git less
+sudo pacman -S uv grim slurp
+sudo pacman -S libnotify
+
+# Yuklenmesi gerekenler
+sudo pacman -S fastfetch keepassxc github-cli
+
+# Fan Kontrol
+yay -S nbfc-linux
+sudo nbfc config --set "Acer Nitro AN515-58"
+sudo nbfc restart
+nbfc set --auto
+sudo systemctl enable --now nbfc_service
+
+/.local/bin icindeki nitro-toogle sh dosyasini calistirilabilir yap 
+chmod +x ~/.local/bin/nitro-toggle
+
+# Font
+https://github.com/ful1e5/Bibata_Cursor
+tar -xvf Bibata.tar.gz
+sudo mv Bibata-* /usr/share/icons/
+
+# Dotfiles Guncelleme
+cd ~/dotfiles
+git status
+git add -A && git commit -m "ne duzenlendi?" && git push
+
+
+
