@@ -15,7 +15,6 @@ fd
 firefox
 fzf
 git
-github-cli
 gnome-themes-extra
 grim
 grub

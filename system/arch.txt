@@ -356,3 +356,6 @@ cd ~/dotfiles
 git status
 git add -A && git commit -m "ne duzenlendi?" && git push
 
+# Packmenle yuklediklerin
+cd ~/dotfiles
+pacman -Qqe > system/pkglist.txt
