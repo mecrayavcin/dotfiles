@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+STATE="${XDG_RUNTIME_DIR:-/tmp}/nitro-fan-mode"
+
+if [[ "$(cat "$STATE" 2>/dev/null)" == "max" ]]; then
+    nbfc set --auto
+    echo "auto" > "$STATE"
+    notify-send -t 1500 "NitroSense" "Fan: AUTO" 2>/dev/null
+else
+    nbfc set -f 0 -s 100 && nbfc set -f 1 -s 100
+    echo "max" > "$STATE"
+    notify-send -t 1500 "NitroSense" "Fan: MAX 🔥" 2>/dev/null
+fi

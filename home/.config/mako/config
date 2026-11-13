@@ -1,0 +1,20 @@
+# --- Waybar Renk Uyumu ve Stil ---
+font=JetBrainsMono Nerd Font Propo 14
+background-color=#18181b
+text-color=#ffffff
+border-color=#75f1fa
+border-size=2
+border-radius=8
+
+# --- Boyut ve Konum ---
+width=350
+height=150
+outer-margin=10
+padding=15
+default-timeout=5000
+anchor=top-right
+
+# --- Acil Durumlar (Urgent) ---
+[urgency=high]
+border-color=#e35149
+default-timeout=0
