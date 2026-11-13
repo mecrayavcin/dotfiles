@@ -75,6 +75,5 @@ wl-clipboard
 wpaperd
 xdg-desktop-portal-hyprland
 yay
-yay-debug
 zoxide
 zsh
