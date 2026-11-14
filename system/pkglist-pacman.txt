@@ -39,7 +39,6 @@ nemo
 neovim
 networkmanager
 networkmanager-openvpn
-nm-connection-editor
 nodejs
 noto-fonts
 noto-fonts-cjk
