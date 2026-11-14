@@ -35,7 +35,6 @@ lvm2
 ly
 mako
 mpv
-nbfc-linux
 nemo
 neovim
 networkmanager
@@ -74,6 +73,5 @@ wireplumber
 wl-clipboard
 wpaperd
 xdg-desktop-portal-hyprland
-yay
 zoxide
 zsh

@@ -334,7 +334,7 @@ sudo pacman -S uv grim slurp
 sudo pacman -S libnotify
 
 # Yuklenmesi gerekenler
-sudo pacman -S fastfetch keepassxc github-cli
+sudo pacman -S fastfetch keepassxc
 
 # Fan Kontrol
 yay -S nbfc-linux
@@ -354,6 +354,7 @@ cd ~/dotfiles
 git status
 git add -A && git commit -m "ne duzenlendi?" && git push
 
-# Packmenle yuklediklerin
+# Packmenle yuklenenler
 cd ~/dotfiles
-pacman -Qqe > system/pkglist.txt
+pacman -Qqen > ~/dotfiles/system/pkglist-pacman.txt
+pacman -Qqem > ~/dotfiles/system/pkglist-aur.txt
