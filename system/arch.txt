@@ -91,7 +91,7 @@ swapon /dev/nvme0n1p2
 
 =======================================================
 
-pacstrap -K /mnt base linux linux-firmware lvm2 networkmanager nm-connection-editor neovim base-devel intel-ucode
+pacstrap -K /mnt base linux linux-firmware lvm2 networkmanager neovim base-devel intel-ucode
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 
