@@ -29,17 +29,12 @@ ssh root@IPAdresi
 timedatectl
 (Sync satiri yes olmali)
 
-# Sistem kac bit?
-cat /sys/firmware/efi/fw_platform_size
-
 # Disk parcalari gosterme
 fdisk -l
-(Ilk satir disk ismi gosterir, altta parcalanmis ise p1 eklenen tum parcalar gozukur)
-(Bize ilk satir ana disk isim lazim)
 
 # Disk parca yapilandirma
 cfdisk /dev/nvme0n1
-(Ana diski adi ust kisimdaki ilk satir)
+(Ana disk adi ust kisimdaki ilk satir)
 
 D ile tum satirlari sil
 N ile ilk 1G alan verip, enter bas Uefi Alani olustur, ardindan T basip cinsi Efi sec.
@@ -65,32 +60,17 @@ cryptsetup open --type luks /dev/nvme0n1p3 lvm
 
 # Olusan lvm gorme
 ls -l /dev/mapper
-(Lvm gozukmeli)
 
 # lvm duzenleme disk boyutu belirleme
 pvcreate /dev/mapper/lvm
-(Bu cihazı LVM için “fiziksel hacim” (Physical Volume) olarak işaretler)
-
 vgcreate volgroup0 /dev/mapper/lvm
-(Havuz olusturuldu)
-
 lvcreate -L 80GB volgroup0 -n lv_root
-(80 GB / kok dizin olusturuldu)
-
 lvcreate -l 100%FREE volgroup0 -n lv_home
-(kalan GB /home dizin olusturuldu)
-
 modprobe dm_mod
-(Device Mapper çekirdek modülünü yükler)
-
 vgscan
-(Sistemdeki volume group’ları arar, birsey yapmana gerek yok)
-
 vgchange -ay
-(Gruplari aktif eder, birsey yapmana gerek yok)
 
 # Formatlama ve MOUNT
-
 (fdisk -l ile parca ve isimleri gorebilirsin)
 
 mkfs.ext4 /dev/volgroup0/lv_root
@@ -109,10 +89,7 @@ mount /dev/nvme0n1p1 /mnt/boot
 
 swapon /dev/nvme0n1p2
 
-(lsblk ile duzenlemeyi gorebilirsin)
-
 =======================================================
-
 
 pacstrap -K /mnt base linux linux-firmware lvm2 networkmanager neovim base-devel intel-ucode
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -134,14 +111,13 @@ hwclock --systohc
 # Dil ve bolge secimi
 nvim /etc/locale-gen
 (/en_US ara en_US.UTF-8 ve en_US ISO-8859-1 hastegleri X kaldir kaydet)
-(i moda gecmene gerek yok x diliyor j asagi k Yukari gider :wq kaydet)
 
 # Bolge kaydet
 locale-gen
 
 # Sistem lokal secme
 /etc/locale.conf
-(i yazma moduna gec icine LANG=en_US.UTF-8 ekle kaydet cik)
+(LANG=en_US.UTF-8 ekle kaydet cik)
 
 # Hostname girme
 nvim /etc/hostname
@@ -161,7 +137,6 @@ passwd mecra
 
 visudo
 (Acilan sayfada /%wheel arat ve # %wheel ALL=(ALL:ALL) ALL bastaki # kaldir)
-(2 tane wheel satiri var 1. olan, i ile editle cik)
 
 # Nvidia driver
 pacman -S nvidia-open nvidia-utils intel-media-driver nvidia-prime
@@ -178,11 +153,10 @@ echo "rd.luks.name=$(blkid -s UUID -o value /dev/nvme0n1p3)=lvm"
 
 # Grub dosya ac
 nvim /etc/default/grub
-(GRUB_CMDLINE_LINUX="" satırını ustteki kodu koy AMA sonuna root=/dev/volgroup0/lv_root ekle)
-(GRUB_CMDLINE_LINUX="rd.luks.name=UID=lvm root=/dev/volgroup0/lv_root") gibi olacak
-Brightness calismasi icin ise:
-(GRUB_CMDLINE_LINUX_DEFAULT="var olanlar + acpi-backlight=native" ekle
-
+(GRUB_CMDLINE_LINUX="")
+(GRUB_CMDLINE_LINUX="rd.luks.name=UID=lvm root=/dev/volgroup0/lv_root") gibi
+Brightness calismasi icin:
+(GRUB_CMDLINE_LINUX_DEFAULT="acpi-backlight=native" ekle
 
 # Config uret
 grub-mkconfig -o /boot/grub/grub.cfg
@@ -190,14 +164,11 @@ grub-mkconfig -o /boot/grub/grub.cfg
 # Kontrol
 grep rd.luks /boot/grub/grub.cfg
 
-
-#Son
-
 exit
 umount -R /mnt
 reboot
 
-(USB’yi çıkarmayı unutma. Açılışta GRUB gelir, ardından şifre sorulur, şifreyi girince sistem açılır.)
+(USB’yi çıkarmayı unutma)
 
 ==================================================================
 
@@ -208,7 +179,6 @@ nmcli connection modify "TP-Link_F858_5G" connection.autoconnect yes
 # Saat Senkronize
 sudo timedatectl set-ntp true
 (internet olmali)
-
 
 # Bluetooth paketlerini kurma
 sudo pacman -S bluez bluez-utils bluez-deprecated-tools bluetui
@@ -234,7 +204,6 @@ sudo systemctl enable ly@tty2
 Sudo reboot
 
 ============================================================
-
 
 Win + Q Terminal ac
 sudo pacman -S firefox thunderbird
@@ -358,3 +327,7 @@ git add -A && git commit -m "ne duzenlendi?" && git push
 cd ~/dotfiles
 pacman -Qqen > ~/dotfiles/system/pkglist-pacman.txt
 pacman -Qqem > ~/dotfiles/system/pkglist-aur.txt
+
+# Geri yukleme 
+sudo pacman -S --needed - < ~/dotfiles/system/pkglist-pacman.txt
+yay -S --needed - < ~/dotfiles/system/pkglist-aur.txt
