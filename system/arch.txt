@@ -347,9 +347,7 @@ sudo systemctl enable --now nbfc_service
 chmod +x ~/.local/bin/nitro-toggle
 
 # Font
-https://github.com/ful1e5/Bibata_Cursor
-tar -xvf Bibata.tar.gz
-sudo mv Bibata-* /usr/share/icons/
+yay -S bibata-cursor-theme
 
 # Dotfiles Guncelleme
 cd ~/dotfiles
