@@ -312,8 +312,16 @@ sudo nbfc restart
 nbfc set --auto
 sudo systemctl enable --now nbfc_service
 
-/.local/bin icindeki nitro-toogle sh dosyasini calistirilabilir yap
+/.local/bin icindeki nitro-toogle dosyasini calistirilabilir yap
 chmod +x ~/.local/bin/nitro-toggle
+chmod +x ~/.local/bin/gpu-temp
+
+sudo nbfc sensors set -f 0 -s @CPU
+sudo nbfc sensors set -f 1 -s '$ /home/mecra/.local/bin/gpu-temp'
+sudo systemctl restart nbfc_service
+sleep 5
+nbfc status
+nbfc sensors show
 
 # Font
 yay -S bibata-cursor-theme
