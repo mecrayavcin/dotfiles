@@ -316,8 +316,12 @@ sudo systemctl enable --now nbfc_service
 chmod +x ~/.local/bin/nitro-toggle
 chmod +x ~/.local/bin/gpu-temp
 
-sudo nbfc sensors set -f 0 -s @CPU
 sudo nbfc sensors set -f 1 -s '$ /home/mecra/.local/bin/gpu-temp'
+sudo systemctl restart nbfc_service
+sleep 3
+nbfc status
+
+sudo nbfc sensors set -f 0 -s @CPU
 sudo systemctl restart nbfc_service
 sleep 5
 nbfc status
