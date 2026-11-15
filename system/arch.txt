@@ -308,12 +308,14 @@ sudo pacman -S fastfetch keepassxc
 # Fan Kontrol
 yay -S nbfc-linux
 sudo nbfc config --set "Acer Nitro AN515-58"
-sudo nbfc restart
+(config dosyalari: /usr/share/nbfc/configs)
+sudo systemctl enable --now nbfc_service
 nbfc set --auto
 sudo nbfc sensors set -f 0 -s @CPU
 sudo nbfc sensors set -f 1 -s @GPU
 sudo systemctl restart nbfc_service
-sudo systemctl enable --now nbfc_service
+nbfc sensors show
+nbfc status
 
 /.local/bin icindeki nitro-toogle dosyasini calistirilabilir yap
 chmod +x ~/.local/bin/nitro-toggle
