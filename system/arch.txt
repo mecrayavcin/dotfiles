@@ -310,10 +310,15 @@ yay -S nbfc-linux
 sudo nbfc config --set "Acer Nitro AN515-58"
 sudo nbfc restart
 nbfc set --auto
+sudo nbfc sensors set -f 0 -s @CPU
+sudo nbfc sensors set -f 1 -s @GPU
+sudo systemctl restart nbfc_service
 sudo systemctl enable --now nbfc_service
 
 /.local/bin icindeki nitro-toogle dosyasini calistirilabilir yap
 chmod +x ~/.local/bin/nitro-toggle
+
+Alternatif:
 chmod +x ~/.local/bin/gpu-temp
 
 sudo nbfc sensors set -f 1 -s '$ /home/mecra/.local/bin/gpu-temp'
