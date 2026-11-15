@@ -307,8 +307,7 @@ sudo pacman -S fastfetch keepassxc
 
 # Fan Kontrol
 yay -S nbfc-linux
-sudo nbfc config --set "Acer Nitro AN515-58"
-(config dosyalari: /usr/share/nbfc/configs)
+sudo nbfc config --set "custom"
 sudo systemctl enable --now nbfc_service
 nbfc set --auto
 sudo nbfc sensors set -f 0 -s @CPU
