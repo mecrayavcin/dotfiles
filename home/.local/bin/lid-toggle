@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+PIDFILE="${XDG_RUNTIME_DIR:-/tmp}/lid-inhibit.pid"
+
+notify() { command -v notify-send >/dev/null && notify-send -t 2000 "Lid" "$1"; echo "$1"; }
+
+if [[ -f $PIDFILE ]] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+    notify "SLEEP ON"
+else
+    systemd-inhibit --what=handle-lid-switch --who="lid-toggle" \
+        --why="LID Sleep Disabled" --mode=block sleep infinity &
+    echo $! > "$PIDFILE"
+    disown
+    notify "SLEEP OFF"
+fi

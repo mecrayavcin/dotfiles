@@ -451,6 +451,9 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 -- Acer NitroSense -> fan Max / Auto toggle
 hl.bind("XF86Launch1", hl.dsp.exec_cmd("$HOME/.local/bin/nitro-toggle"), { locked = true })
 
+-- Lid close sleep toggle
+hl.bind(secondMod .. " + I", hl.dsp.exec_cmd("$HOME/.local/bin/lid-toggle"))
+
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +%F_%H-%M-%S).png"))
