@@ -83,8 +83,8 @@
     "group/volume": {
       "orientation": "horizontal",
       "modules": [
-        "pulseaudio",
-        "pulseaudio/slider"
+        "pulseaudio"
+        // "pulseaudio/slider"
       ]
     }
 }

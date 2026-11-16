@@ -1,0 +1,10 @@
+lsblk
+# USB genelde sda altinda sda1 sda2 seklinde olur
+sudo umount /dev/sda1 /dev/sda2 # Hangisi varsa 2 tane de olabilir!
+sudo wipefs -a /dev/sda
+sudo parted /dev/sda --script mklabel gpt mkpart primary 1MiB 100%
+sudo cryptsetup luksFormat /dev/sda1
+sudo cryptsetup open /dev/sda1 usbcrypt
+sudo mkfs.ext4 -L USBSECURE /dev/mapper/usbcrypt
+sudo cryptsetup close usbcrypt
+sudo chown $USER:$USER /run/media/$USER/USBSECURE
