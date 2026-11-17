@@ -382,8 +382,8 @@ hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Submaps
 
 -- power binds
-hl.bind(secondMod .. " + P", hl.dsp.submap("⏻"))
-
+-- hl.bind(secondMod .. " + P", hl.dsp.submap("⏻"))
+hl.bind("XF86PowerOff", hl.dsp.submap("⏻"), { locked = true })
 hl.define_submap("⏻", function()
 	-- sleep
 	hl.bind("s", function()

@@ -336,6 +336,11 @@ nbfc sensors show
 # Font
 yay -S bibata-cursor-theme
 
+# Power tusu edit
+sudo nvim /etc/systemd/logind.conf
+HandlePowerKey=ignore
+sudo systemctl restart systemd-logind
+
 # Dotfiles Guncelleme
 cd ~/dotfiles
 git status
