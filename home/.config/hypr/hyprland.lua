@@ -231,7 +231,7 @@ hl.config({
 		kb_model = "",
 		kb_options = "",
 		kb_rules = "",
-
+    numlock_by_default = true,
 		repeat_rate = 25,
 		repeat_delay = 300,
 
