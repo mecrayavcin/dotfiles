@@ -2,41 +2,98 @@
 
 add_newline = false
 
-format = "$directory$os$git_branch$git_status$nodejs$python$rust$golang$php$character"
+format = "$directory$os$git_branch$git_status$nodejs$python$rust$golang$php$docker_context$package$character"
 
 [os]
 disabled = false
-format = "[$symbol](#blue) "
+format = "[$symbol](white) "
 
 [os.symbols]
-Ubuntu  = "󰕈"
-Artix   = "󰣇"
-Arch    = "󰣇"
-CachyOS = "󰣇"
-Macos   = ""
+AIX = ""
+AlmaLinux = ""
+Alpaquita = ""
+Alpine = ""
+ALTLinux = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = ""
+Artix = ""
+Bazzite = ""
+Bluefin = ""
+CachyOS = ""
+CentOS = ""
+Debian = ""
+DragonFly = ""
+Elementary = ""
+Emscripten = ""
+EndeavourOS = ""
+Fedora = ""
+FreeBSD = ""
+Garuda = ""
+Gentoo = ""
+HardenedBSD = "󰞌"
+Hurd = ""
+Illumos = ""
+InstantOS = ""
+Ios = "󰀷"
+Kali = ""
+KDENeon = ""
+Linux = ""
+Mabox = ""
+Macos = ""
+Manjaro = ""
+Mariner = ""
+MidnightBSD = ""
+Mint = ""
+NetBSD = ""
+NixOS = ""
+Nobara = ""
+OpenBSD = ""
+OpenCloudOS = ""
+openEuler = ""
+openSUSE = ""
+OracleLinux = "󰺡"
+PikaOS = ""
+Pop = ""
+Raspbian = ""
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+Redox = "󰀘"
+RockyLinux = ""
+Solus = ""
+SUSE = ""
+Ubuntu = ""
+Ultramarine = ""
+Unknown = ""
+Uos = ""
+Void = ""
+Windows = "󰍲"
+Zorin = ""
 
 [directory]
-format            = "[$path](cyan) "
-truncation_length = 4
-truncate_to_repo  = true
+format = "[$path](cyan)[$read_only](red) "
+truncation_length = 1
+truncate_to_repo = true
+read_only = " 󰌾"
 
 [git_branch]
-symbol = ""
+symbol = ""
 format = "[$symbol $branch](bold purple) "
 
 [git_status]
-format     = "($ahead_behind$staged$modified$untracked$deleted$conflicted)"
-ahead      = "[⇡$count ](bold cyan)"
-behind     = "[⇣$count ](bold cyan)"
-diverged   = "[⇡$ahead_count⇣$behind_count ](bold cyan)"
-staged     = "[+$count ](bold green)"
-modified   = "[●$count ](bold yellow)"
-untracked  = "[?$count ](bold white)"
-deleted    = "[✘$count ](bold red)"
+format = "($ahead_behind$staged$modified$untracked$deleted$conflicted)"
+ahead = "[⇡$count ](bold cyan)"
+behind = "[⇣$count ](bold cyan)"
+diverged = "[⇡$ahead_count⇣$behind_count ](bold cyan)"
+staged = "[+$count ](bold green)"
+modified = "[●$count ](bold yellow)"
+untracked = "[?$count ](bold white)"
+deleted = "[✘$count ](bold red)"
 conflicted = "[⚡$count ](bold red)"
 
 [nodejs]
-symbol = ""
+symbol = ""
 format = "[$symbol $version](green) "
 
 [python]
@@ -44,18 +101,26 @@ symbol = ""
 format = "[$symbol $version](yellow) "
 
 [rust]
-symbol = ""
+symbol = "󱘗"
 format = "[$symbol $version](red) "
 
 [golang]
-symbol = ""
+symbol = ""
 format = "[$symbol $version](cyan) "
 
 [php]
-symbol = ""
+symbol = ""
 format = "[$symbol $version](purple) "
+
+[docker_context]
+symbol = ""
+format = "[$symbol $context](blue) "
+
+[package]
+symbol = "󰏗"
+format = "[$symbol $version](208) "
 
 [character]
 success_symbol = "[❯](green)"
-error_symbol   = "[❯](red)"
-vimcmd_symbol  = "[❮](blue)"
+error_symbol = "[❯](red)"
+vimcmd_symbol = "[❮](blue)"
