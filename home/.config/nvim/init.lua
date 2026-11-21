@@ -14,7 +14,7 @@ require('kanagawa').setup({
     keywordStyle = { italic = true},
     statementStyle = { bold = true },
     typeStyle = {},
-    transparent = false,         -- do not set background color
+    transparent = true,         -- do not set background color
     dimInactive = false,         -- dim inactive window `:h hl-NormalNC`
     terminalColors = true,       -- define vim.g.terminal_color_{0,17}
     colors = {                   -- add/modify theme and palette colors
@@ -37,29 +37,6 @@ require('kanagawa').setup({
 
 -- setup must be called before loading
 vim.cmd.colorscheme("kanagawa")
-
-local function set_transparent() -- set UI component to transparent
-	local groups = {
-		"Normal",
-		"NormalNC",
-		"EndOfBuffer",
-		"NormalFloat",
-		"FloatBorder",
-		"SignColumn",
-		"StatusLine",
-		"StatusLineNC",
-		"TabLine",
-		"TabLineFill",
-		"TabLineSel",
-		"ColorColumn",
-	}
-	for _, g in ipairs(groups) do
-		vim.api.nvim_set_hl(0, g, { bg = "none" })
-	end
-	vim.api.nvim_set_hl(0, "TabLineFill", { bg = "none", fg = "#767676" })
-end
-
-set_transparent()
 
 -- ============================================================================
 -- OPTIONS
