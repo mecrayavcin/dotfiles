@@ -52,7 +52,7 @@ local clipboardHistory = "cliphist list | rofi -dmenu | cliphist decode | wl-cop
 --
 hl.on("hyprland.start", function()
 	hl.exec_cmd("waybar & wpaperd -d")
-  hl.exec_cmd("hyprctl setcursor Bibata-Modern-Amber 30")
+  hl.exec_cmd("hyprctl setcursor Bibata-Modern-Ice 24")
 	hl.exec_cmd("playerctld daemon")
 	hl.exec_cmd("wl-paste --watch cliphist store")
 end)
@@ -63,8 +63,8 @@ end)
 
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
-hl.env("XCURSOR_SIZE", "30")
-hl.env("HYPRCURSOR_SIZE", "30")
+hl.env("XCURSOR_SIZE", "24")
+hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 
 -----------------------
