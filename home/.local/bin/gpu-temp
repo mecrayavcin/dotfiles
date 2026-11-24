@@ -1,2 +1,35 @@
-#!/bin/sh
-/usr/bin/nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits | cut -d. -f1
+#!/usr/bin/env bash
+
+STATUS_FILE="/sys/bus/pci/devices/0000:01:00.0/power/runtime_status"
+CACHE_FILE="/tmp/nbfc_gpu_temp.cache"
+COOLDOWN=15
+
+# 1. Kart uykudaysa önbelleği temizle ve sabit 38 döndür
+if [[ -f "$STATUS_FILE" ]] && [[ "$(<"$STATUS_FILE")" == "suspended" ]]; then
+    rm -f "$CACHE_FILE"
+    echo 38
+    exit 0
+fi
+
+NOW=$(date +%s)
+
+# 2. Kart aktifse: Son okumadan bu yana 15 saniye geçmediyse nvidia-smi ÇALIŞTIRMA
+# (Bu süre, oyun kapandıktan sonra GPU'nun uykuya dalabilmesi için gerekli boşluğu sağlar)
+if [[ -f "$CACHE_FILE" ]]; then
+    read -r LAST_TIME LAST_TEMP < "$CACHE_FILE"
+    if (( NOW - LAST_TIME < COOLDOWN )); then
+        echo "$LAST_TEMP"
+        exit 0
+    fi
+fi
+
+# 3. 15 saniye dolduysa ve kart hâlâ aktifse gerçek sıcaklığı oku ve önbelleğe yaz
+TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null)
+
+if [[ "$TEMP" =~ ^[0-9]+$ ]]; then
+    echo "$NOW $TEMP" > "$CACHE_FILE"
+    echo "$TEMP"
+else
+    echo 40
+fi
+
