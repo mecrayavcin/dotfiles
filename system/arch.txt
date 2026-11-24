@@ -341,16 +341,11 @@ sudo nvim /etc/systemd/logind.conf
 HandlePowerKey=ignore
 sudo systemctl restart systemd-logind
 
-# Dotfiles Guncelleme
-cd ~/dotfiles
-git status
-git add -A && git commit -m "ne duzenlendi?" && git push
-
 # Packmenle yuklenenler
 cd ~/dotfiles
 pacman -Qqen > ~/dotfiles/system/pkglist-pacman.txt
 pacman -Qqem > ~/dotfiles/system/pkglist-aur.txt
 
-# Geri yukleme 
+# Geri yukleme
 sudo pacman -S --needed - < ~/dotfiles/system/pkglist-pacman.txt
 yay -S --needed - < ~/dotfiles/system/pkglist-aur.txt
